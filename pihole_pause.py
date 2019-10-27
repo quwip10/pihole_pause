@@ -10,6 +10,10 @@ pattern = r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
 resolv_file = "/etc/resolv.conf"
 
 
+def first_run():
+    pass
+
+
 def get_pihole_ip():
     user_os = sys.platform
     if user_os == "darwin":
@@ -22,10 +26,11 @@ def get_pihole_ip():
         pass
 
     elif sys.platform.startswith("linux"):
-        with open("/etc/resolv.conf", "r") as filer:
-            resolv = filer.read()
+        if os.path.exists("/etc/resolv.conf"):
+            with open("/etc/resolv.conf", "r") as filer:
+                resolv = filer.read()
 
-            return((re.search(pattern, resolv)[0]))
+                return((re.search(pattern, resolv)[0]))
 
 
 def get_webpassword(pihole_ip, username):
@@ -40,6 +45,8 @@ def get_pihole_status(pihole_ip):
     pass
 
 
-print("poop", get_pihole_ip())
+if __name__ == "__main__":
 
-print("passssss", get_webpassword(get_pihole_ip(), "atlasalex"))
+    print("poop", get_pihole_ip())
+
+    print("passssss", get_webpassword(get_pihole_ip(), "atlasalex"))
