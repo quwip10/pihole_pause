@@ -50,6 +50,7 @@ def get_pihole_status(pihole_ip):
 
 if __name__ == "__main__":
 
-    print("poop", get_pihole_ip())
-
-    print("passssss", get_webpassword(get_pihole_ip(), "atlasalex"))
+    if not os.path.exists("./pihole_pause.conf"):
+        first_run()
+    else:
+        print("not first run")
