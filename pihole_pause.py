@@ -5,6 +5,7 @@ import argparse
 import re
 import os
 import paramiko
+import requests
 
 pattern = r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
 resolv_file = "/etc/resolv.conf"
@@ -42,7 +43,9 @@ def get_webpassword(pihole_ip, username):
 
 
 def get_pihole_status(pihole_ip):
-    pass
+    r = requests.get(f"http://{pihole_ip}/admin/api.php?status")
+    if r.status_code == 200:
+        return r.json()['status']
 
 
 if __name__ == "__main__":
