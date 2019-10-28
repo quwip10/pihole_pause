@@ -2,16 +2,26 @@
 # atlasalex
 import sys
 import argparse
-import re
 import os
-import paramiko
 import requests
+import re
+import getpass
+from pexpect import pxssh
 
 pattern = r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
-resolv_file = "/etc/resolv.conf"
 
 
-def first_run():
+def first_run(pihole_ip=None, username=None):
+    with open("./pihole_pause.conf", "w") as conf:
+        pihole_ip = get_pihole_ip()
+        passwd = get_webpassword(pihole_ip, username)
+
+        conf.writelines(f"pihole_ip,{pihole_ip}")
+        conf.writelines(f"pihole_webpass:{passwd}")
+
+
+def load_conf():
+    # FIXME load conf from pihole_pause.conf
     pass
 
 
@@ -35,11 +45,32 @@ def get_pihole_ip():
 
 
 def get_webpassword(pihole_ip, username):
-    with os.popen(f'ssh -t {username}@{pihole_ip} "sudo cat /etc/pihole/setupVars.conf | grep PASSWORD"') as p_word_file:
-        passwordd = p_word_file
-        for entry in p_word_file:
-            print(entry)
-        # return(passwordd[0])
+    # FIXME add argparse variables and input checking
+    # FIXME add logging
+    grab = ""
+
+    hostname = input("hostname: ")
+    username = input("enter username for ssh: ")
+    ssh_pass = getpass.getpass("ssh password: ")
+
+    ssh_sess = pxssh.pxssh(options={
+                        "StrictHostKeyChecking": "no",
+                        "UserKnownHostsFile": "/dev/null"})
+
+    if not ssh_sess.login(hostname, username, ssh_pass):
+        print("ERRORRRRRR")  # FIXME add logging here
+    else:
+        # ssh_sess.sendline('uptime')
+        ssh_sess.sendline("sudo cat /etc/pihole/setupVars.conf | grep PASSWORD")
+        print("Retrieving Web Password")
+        print("Please wait")
+        ssh_sess.prompt()
+        ssh_sess.sendline(ssh_pass)
+        ssh_sess.prompt()
+        grab = str(ssh_sess.before.decode("utf-8").strip())
+        ssh_sess.logout()
+
+    return grab[grab.find("=")+1:-1]
 
 
 def get_pihole_status(pihole_ip):
@@ -53,4 +84,5 @@ if __name__ == "__main__":
     if not os.path.exists("./pihole_pause.conf"):
         first_run()
     else:
-        print("not first run")
+        print("not first run.\nLoading configuration")
+        load_conf()
