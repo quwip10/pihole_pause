@@ -61,7 +61,9 @@ def get_webpassword(pihole_ip, username):
         print("ERRORRRRRR")  # FIXME add logging here
     else:
         # ssh_sess.sendline('uptime')
-        ssh_sess.sendline("sudo cat /etc/pihole/setupVars.conf | grep PASSWORD")
+        ssh_sess.sendline(
+                "sudo cat /etc/pihole/setupVars.conf | grep PASSWORD"
+                          )
         print("Retrieving Web Password")
         print("Please wait")
         ssh_sess.prompt()
