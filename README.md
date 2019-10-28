@@ -7,3 +7,6 @@ Add argparse to pass values
 Upadate get_webpasswd to use paramiko
 Update get_pihole_ip to get secondary dns
     Also accept manual ip addresses via argparse
+
+Very Future State:
+Possibly make into browser extension
