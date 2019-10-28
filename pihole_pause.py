@@ -16,8 +16,8 @@ def first_run(pihole_ip=None, username=None):
         pihole_ip = get_pihole_ip()
         passwd = get_webpassword(pihole_ip, username)
 
-        conf.writelines(f"pihole_ip,{pihole_ip}")
-        conf.writelines(f"pihole_webpass:{passwd}")
+        conf.writelines(f"pihole_ip,{pihole_ip}\n")
+        conf.writelines(f"pihole_webpass,{passwd}\n")
 
 
 def load_conf():
